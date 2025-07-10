@@ -14,6 +14,13 @@ type ReviewWithClientName = {
   client_name: string | null;
 };
 
+// --- TIPO CORREGIDO PARA LOS PROPS DE LA PÁGINA ---
+type PageProps = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+
 // --- FUNCIONES PARA OBTENER DATOS DEL SERVIDOR ---
 async function getProfile(id: string) {
   const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
@@ -31,7 +38,6 @@ async function getGalleryImages(profileId: string) {
   return files.map(file => supabase.storage.from('work-gallery').getPublicUrl(`${profileId}/${file.name}`).data.publicUrl);
 }
 
-// --- FUNCIÓN CORREGIDA ---
 async function getReviews(profileId: string): Promise<ReviewWithClientName[]> {
   const { data, error } = await supabase.rpc('get_reviews_with_client_names', {
     professional_id_param: profileId
@@ -39,9 +45,8 @@ async function getReviews(profileId: string): Promise<ReviewWithClientName[]> {
 
   if (error) {
     console.error("Error calling DB function:", error);
-    return []; // Si hay error, devuelve un array vacío
+    return [];
   }
-  // Si no hay error, devuelve los datos O un array vacío si los datos son nulos.
   return data || []; 
 }
 
@@ -66,6 +71,59 @@ async function getAvailability(profileId: string) {
 }
 
 // --- PEQUEÑOS COMPONENTES DE VISUALIZACIÓN ---
+function RatingSummary({ average, total }: { average: number, total: number }) { /* ...código sin cambios... */ }
+function WorkGallery({ images, professionalName }: { images: string[], professionalName: string | null }) { /* ...código sin cambios... */ }
+function ReviewsList({ reviews }: { reviews: ReviewWithClientName[] }) { /* ...código sin cambios... */ }
+
+// --- COMPONENTE PRINCIPAL DE LA PÁGINA ---
+// --- Usamos el nuevo tipo PageProps aquí ---
+export default async function ProfessionalDetailPage({ params }: PageProps) {
+  const profile = await getProfile(params.id);
+  const galleryImages = await getGalleryImages(params.id);
+  const reviews = await getReviews(params.id);
+  const availabilityEvents = await getAvailability(params.id);
+
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0
+    ? reviews.reduce((acc, review) => acc + (review.rating || 0), 0) / totalReviews
+    : 0;
+
+  return (
+    <div style={{ maxWidth: '700px', margin: '50px auto', padding: '20px' }}>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{profile.full_name}</h1>
+      
+      <p style={{ display: 'inline-block', background: '#e0e7ff', color: '#4338ca', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>
+        {profile.specialty}
+      </p>
+
+      <RatingSummary average={averageRating} total={totalReviews} />
+      
+      {/* <StartChatButton professional_id={profile.id} /> */}
+
+      <hr style={{ margin: '30px 0' }} />
+
+      <h3 style={{ fontSize: '1.25rem' }}>Acerca de este profesional:</h3>
+      <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
+        {profile.bio || 'Este profesional aún no ha añadido una biografía.'}
+      </p>
+
+      <WorkGallery images={galleryImages} professionalName={profile.full_name} />
+
+      <hr style={{ margin: '30px 0' }} />
+      <h3 style={{ fontSize: '1.25rem' }}>Disponibilidad</h3>
+      <AvailabilityCalendar events={availabilityEvents} />
+      
+      <ReviewsList reviews={reviews} />
+
+      <hr style={{ margin: '30px 0' }} />
+      <h3 style={{ fontSize: '1.25rem' }}>Escribe tu propia reseña</h3>
+      <ReviewForm professional_id={profile.id} />
+    </div>
+  );
+}
+
+
+// Re-incluyo los componentes pequeños para que el archivo esté completo y no haya dudas
 function RatingSummary({ average, total }: { average: number, total: number }) {
   if (total === 0) return null;
   return (
@@ -118,51 +176,5 @@ function ReviewsList({ reviews }: { reviews: ReviewWithClientName[] }) {
         <p>Este profesional aún no tiene reseñas.</p>
       )}
     </>
-  );
-}
-
-// --- COMPONENTE PRINCIPAL DE LA PÁGINA ---
-export default async function ProfessionalDetailPage({ params }: { params: { id: string } }) {
-  const profile = await getProfile(params.id);
-  const galleryImages = await getGalleryImages(params.id);
-  const reviews = await getReviews(params.id);
-  const availabilityEvents = await getAvailability(params.id);
-
-  const totalReviews = reviews.length;
-  const averageRating = totalReviews > 0
-    ? reviews.reduce((acc, review) => acc + (review.rating || 0), 0) / totalReviews
-    : 0;
-
-  return (
-    <div style={{ maxWidth: '700px', margin: '50px auto', padding: '20px' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{profile.full_name}</h1>
-      
-      <p style={{ display: 'inline-block', background: '#e0e7ff', color: '#4338ca', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>
-        {profile.specialty}
-      </p>
-
-      <RatingSummary average={averageRating} total={totalReviews} />
-      
-      {/* <StartChatButton professional_id={profile.id} /> */}
-
-      <hr style={{ margin: '30px 0' }} />
-
-      <h3 style={{ fontSize: '1.25rem' }}>Acerca de este profesional:</h3>
-      <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-        {profile.bio || 'Este profesional aún no ha añadido una biografía.'}
-      </p>
-
-      <WorkGallery images={galleryImages} professionalName={profile.full_name} />
-
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Disponibilidad</h3>
-      <AvailabilityCalendar events={availabilityEvents} />
-      
-      <ReviewsList reviews={reviews} />
-
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Escribe tu propia reseña</h3>
-      <ReviewForm professional_id={profile.id} />
-    </div>
   );
 }

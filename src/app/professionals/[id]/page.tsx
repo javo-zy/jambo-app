@@ -1,8 +1,15 @@
+// src/app/professionals/[id]/page.tsx
+
 import { supabase } from '@/lib/supabaseClient';
 import { notFound } from 'next/navigation';
+
+// Importamos nuestros componentes
 import ReviewForm from '@/components/ReviewForm';
-import StartChatButton from '@/components/StartChatButton';
 import AvailabilityCalendar from '@/components/AvailabilityCalendar';
+import RatingSummary from '@/components/RatingSummary';
+import WorkGallery from '@/components/WorkGallery';
+import ReviewsList from '@/components/ReviewsList';
+// import StartChatButton from '@/components/StartChatButton';
 
 // --- TIPOS DE DATOS ---
 type ReviewWithClientName = {
@@ -12,12 +19,7 @@ type ReviewWithClientName = {
   client_name: string | null;
 };
 
-type PageProps = {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-// --- FUNCIONES PARA OBTENER DATOS DEL SERVIDOR ---
+// --- FUNCIONES PARA OBTENER DATOS (Definidas una sola vez aquí) ---
 async function getProfile(id: string) {
   const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
   if (error || !data) {
@@ -35,15 +37,12 @@ async function getGalleryImages(profileId: string) {
 }
 
 async function getReviews(profileId: string): Promise<ReviewWithClientName[]> {
-  const { data, error } = await supabase.rpc('get_reviews_with_client_names', {
-    professional_id_param: profileId
-  });
-
+  const { data, error } = await supabase.rpc('get_reviews_with_client_names', { professional_id_param: profileId });
   if (error) {
-    console.error("Error calling DB function:", error);
+    console.error("Error fetching reviews:", error);
     return [];
   }
-  return data || []; 
+  return data || [];
 }
 
 async function getAvailability(profileId: string) {
@@ -66,65 +65,9 @@ async function getAvailability(profileId: string) {
   }));
 }
 
-// --- PEQUEÑOS COMPONENTES DE VISUALIZACIÓN (Definidos una sola vez) ---
-function RatingSummary({ average, total }: { average: number, total: number }) {
-  if (total === 0) return null;
-  return (
-    <div style={{ marginTop: '15px', display: 'flex', alignItems: 'center' }}>
-      <span style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#f59e0b' }}>
-        ★ {average.toFixed(1)}
-      </span>
-      <span style={{ marginLeft: '10px', color: '#666' }}>
-        ({total} {total === 1 ? 'reseña' : 'reseñas'})
-      </span>
-    </div>
-  );
-}
-
-function WorkGallery({ images, professionalName }: { images: string[], professionalName: string | null }) {
-  if (images.length === 0) return null;
-  return (
-    <>
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Galería de Trabajos</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
-        {images.map((url, index) => (
-          <img key={index} src={url} alt={`Trabajo de ${professionalName}`} style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}/>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function ReviewsList({ reviews }: { reviews: ReviewWithClientName[] }) {
-  return (
-    <>
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Reseñas de Clientes</h3>
-      {reviews.length > 0 ? (
-        <div>
-          {reviews.map((review) => (
-            <div key={review.id} style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                <span style={{ fontWeight: 'bold' }}>{review.client_name || 'Anónimo'}</span>
-                <span style={{ marginLeft: '10px', fontWeight: 'bold', color: '#f59e0b' }}>
-                  ★ {review.rating}
-                </span>
-              </div>
-              <p style={{ margin: 0 }}>{review.comment}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>Este profesional aún no tiene reseñas.</p>
-      )}
-    </>
-  );
-}
-
 
 // --- COMPONENTE PRINCIPAL DE LA PÁGINA ---
-export default async function ProfessionalDetailPage({ params }: PageProps) {
+export default async function ProfessionalDetailPage({ params }: { params: { id: string } }) {
   const profile = await getProfile(params.id);
   const galleryImages = await getGalleryImages(params.id);
   const reviews = await getReviews(params.id);
@@ -132,39 +75,56 @@ export default async function ProfessionalDetailPage({ params }: PageProps) {
 
   const totalReviews = reviews.length;
   const averageRating = totalReviews > 0
-    ? reviews.reduce((acc, review) => acc + (review.rating || 0), 0) / totalReviews
+    ? reviews.reduce((acc: any, review: any) => acc + (review.rating || 0), 0) / totalReviews
     : 0;
 
   return (
-    <div style={{ maxWidth: '700px', margin: '50px auto', padding: '20px' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{profile.full_name}</h1>
-      
-      <p style={{ display: 'inline-block', background: '#e0e7ff', color: '#4338ca', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>
-        {profile.specialty}
-      </p>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <div className="lg:col-span-2 space-y-8">
+            <section className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Acerca de este profesional</h2>
+              <p className="text-gray-600 leading-relaxed">
+                {profile.bio || 'Este profesional aún no ha añadido una biografía.'}
+              </p>
+            </section>
 
-      <RatingSummary average={averageRating} total={totalReviews} />
-      
-      {/* <StartChatButton professional_id={profile.id} /> */}
+            <WorkGallery images={galleryImages} professionalName={profile.full_name} />
+            
+            <section className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Disponibilidad</h2>
+              <AvailabilityCalendar events={availabilityEvents} />
+            </section>
 
-      <hr style={{ margin: '30px 0' }} />
+            <ReviewsList reviews={reviews} />
+          </div>
 
-      <h3 style={{ fontSize: '1.25rem' }}>Acerca de este profesional:</h3>
-      <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-        {profile.bio || 'Este profesional aún no ha añadido una biografía.'}
-      </p>
+          <aside className="lg:col-span-1 space-y-8">
+            <section className="bg-white p-6 rounded-lg shadow-sm text-center">
+              <div className="w-32 h-32 rounded-full bg-gray-200 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                 <span className="text-5xl text-gray-500">
+                  {profile.full_name ? profile.full_name.charAt(0) : '?'}
+                </span>
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900">{profile.full_name}</h1>
+              <p className="text-lg text-red-600 font-semibold">{profile.specialty}</p>
+              <RatingSummary average={averageRating} total={totalReviews} />
+              
+              {/* <div className="mt-6">
+                 <StartChatButton professional_id={profile.id} />
+              </div> */}
+            </section>
 
-      <WorkGallery images={galleryImages} professionalName={profile.full_name} />
+             <section className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Escribe tu propia reseña</h3>
+                <ReviewForm professional_id={profile.id} />
+             </section>
+          </aside>
 
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Disponibilidad</h3>
-      <AvailabilityCalendar events={availabilityEvents} />
-      
-      <ReviewsList reviews={reviews} />
-
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Escribe tu propia reseña</h3>
-      <ReviewForm professional_id={profile.id} />
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,12 +1,12 @@
 // src/app/profile/page.tsx
-
 'use client'
 
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabaseClient'
-import type { User } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabaseClient';
+import type { User } from '@supabase/supabase-js';
+import Button from '@/components/Button';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,11 +14,13 @@ export default function ProfilePage() {
   const [fullName, setFullName] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [bio, setBio] = useState('');
-  const router = useRouter();
+  const [locationSaved, setLocationSaved] = useState(false);
+  
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [galleryImages, setGalleryImages] = useState<{ name: string, url: string }[]>([]);
-  const [locationSaved, setLocationSaved] = useState(false);
+
+  const router = useRouter();
 
   const fetchGalleryImages = useCallback(async (userId: string) => {
     if (!userId) return;
@@ -38,6 +40,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUser(session.user);
@@ -136,74 +139,83 @@ export default function ProfilePage() {
     router.push('/');
   };
 
-  if (loading && !user) return <p style={{ textAlign: 'center', marginTop: '50px' }}>Cargando...</p>;
-
+  if (loading && !user) return <p className="text-center mt-12">Cargando...</p>;
+  
   return (
-    <div style={{ maxWidth: '600px', margin: '50px auto' }}>
-      <h1>Tu Perfil Profesional</h1>
-      <div style={{ marginBottom: '20px' }}>
-        <Link href="/profile/agenda" style={{ textDecoration: 'none', padding: '10px 15px', background: '#28a745', color: 'white', borderRadius: '5px' }}>
-          Gestionar mi Agenda
-        </Link>
-      </div>
-      <form onSubmit={handleUpdateProfile}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Email</label>
-          <input type="text" value={user?.email} disabled style={{ width: '100%', padding: '8px', background: '#eee' }} />
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-black">Mi Panel de Control</h1>
+          <Button variant="danger" onClick={handleSignOut} disabled={loading || uploading}>
+            Cerrar Sesión
+          </Button>
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="fullName">Nombre Completo</label>
-          <input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="specialty">Especialidad (ej. Plomero, Electricista)</label>
-          <input id="specialty" type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="bio">Biografía Corta</label>
-          <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} style={{ width: '100%', padding: '8px', minHeight: '100px' }} />
-        </div>
-        <button type="submit" disabled={loading || uploading} style={{ width: '100%', padding: '10px', background: 'blue', color: 'white', border: 'none', cursor: 'pointer' }}>
-          {loading ? 'Actualizando...' : 'Actualizar Perfil'}
-        </button>
-      </form>
 
-      <hr style={{ margin: '20px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Tu Ubicación de Trabajo</h3>
-      <div style={{ padding: '15px', background: '#f0f0f0', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 10px 0' }}>
-          {locationSaved ? '✅ Tu ubicación está guardada.' : '❌ Aún no has guardado tu ubicación.'}
-        </p>
-        <button onClick={handleSetLocation} disabled={loading} style={{ padding: '8px 15px', background: 'darkgreen', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '5px' }}>
-          {loading ? 'Obteniendo...' : 'Establecer mi ubicación actual'}
-        </button>
-      </div>
+        <section className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-4 text-black">Datos del Perfil</h2>
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            <div>
+              <label className="block mb-1 font-medium text-black">Email</label>
+              <input type="text" value={user?.email} disabled className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg" />
+            </div>
+            <div>
+              <label htmlFor="fullName" className="block mb-1 font-medium text-black">Nombre Completo</label>
+              <input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" />
+            </div>
+            <div>
+              <label htmlFor="specialty" className="block mb-1 font-medium text-black">Especialidad</label>
+              <input id="specialty" type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" />
+            </div>
+            <div>
+              <label htmlFor="bio" className="block mb-1 font-medium text-black">Biografía Corta</label>
+              <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg min-h-[120px]" />
+            </div>
+            <Button type="submit" variant="primary" className="w-full sm:w-auto" disabled={loading || uploading}>
+              {loading ? 'Actualizando...' : 'Guardar Cambios del Perfil'}
+            </Button>
+          </form>
+        </section>
 
-      <hr style={{ margin: '20px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Galería de Trabajos</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '10px', marginBottom: '20px' }}>
-        {galleryImages.map(image => (
-          <div key={image.name} style={{ position: 'relative' }}>
-            <img src={image.url} alt="Trabajo realizado" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px' }} />
-            <button onClick={() => handleImageDelete(image.name)} style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', cursor: 'pointer', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, fontSize: '14px' }}>
-              X
-            </button>
+        <section className="bg-white p-6 rounded-lg shadow-md">
+           <h2 className="text-2xl font-semibold mb-4 text-black">Ubicación y Agenda</h2>
+           <p className="mb-2 text-black">
+              {locationSaved ? '✅ Tu ubicación está guardada.' : '❌ Aún no has guardado tu ubicación.'}
+            </p>
+           <div className="flex flex-wrap gap-4">
+              <Button onClick={handleSetLocation} disabled={loading} className="bg-green-600 hover:bg-green-700 focus:ring-green-500 text-white">
+                {loading ? 'Obteniendo...' : 'Establecer mi Ubicación'}
+              </Button>
+              <Link href="/profile/agenda" className="inline-block">
+                <Button variant="secondary">
+                  Gestionar mi Agenda
+                </Button>
+              </Link>
+           </div>
+        </section>
+
+        <section className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-4 text-black">Galería de Trabajos</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
+            {galleryImages.map(image => (
+              <div key={image.name} className="relative group">
+                <img src={image.url} alt="Trabajo realizado" className="w-full h-32 object-cover rounded-lg" />
+                <button onClick={() => handleImageDelete(image.name)} className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-        {galleryImages.length === 0 && <p>Aún no has subido imágenes.</p>}
+          {galleryImages.length === 0 && <p className="text-gray-500">Aún no has subido imágenes.</p>}
+          
+          <div>
+            <label htmlFor="workImage" className="block mb-1 font-medium text-black">Añadir nueva imagen:</label>
+            <input id="workImage" type="file" accept="image/*" onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])} disabled={uploading} className="block file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+            <Button type="button" onClick={handleImageUpload} disabled={uploading || !selectedFile} className="mt-2 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 text-white">
+              {uploading ? 'Subiendo...' : 'Subir Imagen'}
+            </Button>
+          </div>
+        </section>
       </div>
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="workImage">Añadir nueva imagen</label>
-        <input id="workImage" type="file" accept="image/*" onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])} disabled={uploading} />
-      </div>
-      <button type="button" onClick={handleImageUpload} disabled={uploading || !selectedFile} style={{ padding: '8px 15px', background: 'purple', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '5px' }}>
-        {uploading ? 'Subiendo...' : 'Subir Imagen'}
-      </button>
-
-      <hr style={{ margin: '20px 0' }} />
-      <button onClick={handleSignOut} disabled={loading || uploading} style={{ width: '100%', padding: '10px', background: 'red', color: 'white', border: 'none', cursor: 'pointer' }}>
-        Cerrar Sesión
-      </button>
     </div>
   )
 }

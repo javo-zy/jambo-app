@@ -36,7 +36,7 @@ export default function SignupPage() {
       setSuccessMessage('¡Registro exitoso! Revisa tu email para confirmar tu cuenta.');
 
     } catch (error: any) {
-      setError('Ocurrió un error: ' + error.message);
+      setError('Ocurrió un error al crear la cuenta: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -44,10 +44,10 @@ export default function SignupPage() {
 
   if (successMessage) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="max-w-md w-full mx-auto text-center bg-white p-8 rounded-lg shadow-md">
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center p-4">
+        <div className="max-w-md w-full mx-auto text-center bg-white p-8 rounded-xl shadow-lg">
           <h2 className="text-2xl font-bold text-green-600">¡Éxito!</h2>
-          <p className="mt-2 text-black">{successMessage}</p>
+          <p className="mt-2 text-gray-800">{successMessage}</p>
           <Link href="/login" className="text-red-600 hover:underline font-medium mt-4 inline-block">
             Ir a Iniciar Sesión
           </Link>
@@ -57,36 +57,60 @@ export default function SignupPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
       <div className="max-w-md w-full mx-auto">
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-3xl font-bold text-center mb-2 text-black">Crea tu Cuenta</h1>
+        <div className="bg-white p-8 rounded-xl shadow-lg">
+          <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">Crea tu Cuenta</h1>
           <p className="text-center text-gray-600 mb-6">Únete a la comunidad JAMBO</p>
           
           <form onSubmit={handleSignUp}>
             {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             
             <div className="mb-4">
-              <label htmlFor="fullName" className="block mb-1 font-medium text-black">Nombre Completo</label>
-              <input id="fullName" type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" disabled={loading}/>
+              <label htmlFor="fullName" className="block mb-1 font-medium text-gray-700">Nombre Completo</label>
+              <input 
+                id="fullName" 
+                type="text" 
+                required 
+                value={fullName} 
+                onChange={(e) => setFullName(e.target.value)} 
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900" // <-- CORRECCIÓN AQUÍ
+                disabled={loading}
+              />
             </div>
             
             <div className="mb-4">
-              <label htmlFor="email" className="block mb-1 font-medium text-black">Email</label>
-              <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" disabled={loading}/>
+              <label htmlFor="email" className="block mb-1 font-medium text-gray-700">Email</label>
+              <input 
+                id="email" 
+                type="email" 
+                required 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900" // <-- CORRECCIÓN AQUÍ
+                disabled={loading}
+              />
             </div>
             
             <div className="mb-6">
-              <label htmlFor="password" className="block mb-1 font-medium text-black">Contraseña</label>
-              <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" disabled={loading}/>
+              <label htmlFor="password" className="block mb-1 font-medium text-gray-700">Contraseña</label>
+              <input 
+                id="password" 
+                type="password" 
+                required 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900" // <-- CORRECCIÓN AQUÍ
+                disabled={loading}
+              />
             </div>
 
             <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-              {loading ? 'Registrando...' : 'Crear Cuenta'}
+              {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </Button>
           </form>
         </div>
-        <p className="text-center mt-4 text-black">
+        <p className="text-center mt-4 text-gray-600">
           ¿Ya tienes una cuenta? <Link href="/login" className="text-red-600 hover:underline font-medium">Inicia Sesión</Link>
         </p>
       </div>

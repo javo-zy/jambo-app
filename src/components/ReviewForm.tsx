@@ -1,10 +1,11 @@
-'use client' 
+// src/components/ReviewForm.tsx
+'use client'
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import type { User } from '@supabase/supabase-js'
+import Button from './Button'; // Importamos nuestro botón
 
-// El componente recibe el ID del profesional como una "prop"
 export default function ReviewForm({ professional_id }: { professional_id: string }) {
   const [user, setUser] = useState<User | null>(null)
   const [rating, setRating] = useState(0)
@@ -14,7 +15,6 @@ export default function ReviewForm({ professional_id }: { professional_id: strin
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    // Al cargar el componente, revisamos si hay un usuario con sesión iniciada
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
@@ -53,7 +53,6 @@ export default function ReviewForm({ professional_id }: { professional_id: strin
       setSuccess('¡Gracias por tu reseña! Tu opinión ha sido publicada.');
       setRating(0);
       setComment('');
-      // Podríamos llamar a una función para refrescar la lista de reseñas automáticamente
       
     } catch (err: any) {
       setError('Error al publicar la reseña: ' + err.message);
@@ -63,55 +62,50 @@ export default function ReviewForm({ professional_id }: { professional_id: strin
   };
 
   if (loading) {
-    return <p>Cargando formulario...</p>
+    return <p className="text-gray-600">Cargando formulario...</p>
   }
   
-  // Si el usuario no ha iniciado sesión, le mostramos un mensaje.
   if (!user) {
     return (
-      <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '8px', textAlign: 'center' }}>
-        <p>Debes <a href="/login" style={{ color: 'blue', textDecoration: 'underline' }}>iniciar sesión</a> para dejar una reseña.</p>
+      <div className="text-center">
+        <p className="text-gray-700">Debes <a href="/login" className="text-red-600 hover:underline font-semibold">iniciar sesión</a> para dejar una reseña.</p>
       </div>
     );
   }
 
-  // Si el usuario ya ha enviado la reseña, muestra el mensaje de éxito.
   if (success) {
-    return <p style={{ color: 'green' }}>{success}</p>
+    return <p className="text-green-600 font-semibold">{success}</p>
   }
 
-  // Si el usuario ha iniciado sesión, le mostramos el formulario.
   return (
-    <form onSubmit={handleSubmit} style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-      <h4>Deja tu Calificación</h4>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <form onSubmit={handleSubmit}>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
       
-      <div style={{ marginBottom: '15px' }}>
-        <label>Calificación:</label>
-        {/* Un simple sistema de 5 estrellas con botones */}
-        <div style={{ display: 'flex', gap: '5px', fontSize: '2rem', cursor: 'pointer' }}>
+      <div className="mb-4">
+        <label className="block mb-1 font-medium text-black">Calificación:</label>
+        <div className="flex gap-1 text-3xl cursor-pointer">
           {[1, 2, 3, 4, 5].map(star => (
-            <span key={star} onClick={() => setRating(star)} style={{ color: star <= rating ? '#f59e0b' : '#ccc' }}>
+            <span key={star} onClick={() => !loading && setRating(star)} className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}>
               ★
             </span>
           ))}
         </div>
       </div>
       
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="comment">Comentario (opcional):</label>
+      <div className="mb-4">
+        <label htmlFor="comment" className="block mb-1 font-medium text-black">Comentario (opcional):</label>
         <textarea
           id="comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          style={{ width: '100%', minHeight: '80px', padding: '8px', marginTop: '5px' }}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900 min-h-[100px]"
           disabled={loading}
         />
       </div>
       
-      <button type="submit" disabled={loading} style={{ padding: '10px 15px', background: 'blue', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+      <Button type="submit" variant="primary" disabled={loading} className="w-full">
         {loading ? 'Publicando...' : 'Publicar Reseña'}
-      </button>
+      </Button>
     </form>
   );
 }

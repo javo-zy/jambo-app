@@ -28,7 +28,7 @@ interface AvailabilityEvent extends Event {
 
 export default function AvailabilityCalendar({ events }: { events: AvailabilityEvent[] }) {
   if (events.length === 0) {
-    return <p>Este profesional aún no ha marcado su disponibilidad.</p>;
+    return <p className="text-gray-600">Este profesional aún no ha marcado su disponibilidad.</p>;
   }
 
   return (

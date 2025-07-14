@@ -19,7 +19,7 @@ type ReviewWithClientName = {
   client_name: string | null;
 };
 
-// --- FUNCIONES PARA OBTENER DATOS (Definidas una sola vez aquí) ---
+// --- FUNCIONES PARA OBTENER DATOS ---
 async function getProfile(id: string) {
   const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
   if (error || !data) {
@@ -85,8 +85,8 @@ export default async function ProfessionalDetailPage({ params }: { params: { id:
           
           <div className="lg:col-span-2 space-y-8">
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Acerca de este profesional</h2>
-              <p className="text-gray-600 leading-relaxed">
+              <h2 className="text-2xl font-bold text-black mb-4">Acerca de este profesional</h2>
+              <p className="text-gray-700 leading-relaxed">
                 {profile.bio || 'Este profesional aún no ha añadido una biografía.'}
               </p>
             </section>
@@ -94,7 +94,7 @@ export default async function ProfessionalDetailPage({ params }: { params: { id:
             <WorkGallery images={galleryImages} professionalName={profile.full_name} />
             
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Disponibilidad</h2>
+              <h2 className="text-2xl font-bold text-black mb-4">Disponibilidad</h2>
               <AvailabilityCalendar events={availabilityEvents} />
             </section>
 
@@ -108,7 +108,7 @@ export default async function ProfessionalDetailPage({ params }: { params: { id:
                   {profile.full_name ? profile.full_name.charAt(0) : '?'}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">{profile.full_name}</h1>
+              <h1 className="text-3xl font-bold text-black">{profile.full_name}</h1>
               <p className="text-lg text-red-600 font-semibold">{profile.specialty}</p>
               <RatingSummary average={averageRating} total={totalReviews} />
               
@@ -118,7 +118,7 @@ export default async function ProfessionalDetailPage({ params }: { params: { id:
             </section>
 
              <section className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Escribe tu propia reseña</h3>
+                <h3 className="text-xl font-bold text-black mb-4">Escribe tu propia reseña</h3>
                 <ReviewForm professional_id={profile.id} />
              </section>
           </aside>

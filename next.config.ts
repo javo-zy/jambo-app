@@ -1,9 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // --- AÑADE ESTA SECCIÓN ---
+  images: {
+    remotePatterns: [
+      {
+         protocol: 'https',
+        hostname: 'crxcdfbbkvgokqvdtjro.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   eslint: {
-    // Advertencia: Esto permite que el proyecto se construya (build)
-    // incluso si tu código tiene errores de ESLint.
     ignoreDuringBuilds: true,
   },
 };

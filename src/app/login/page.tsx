@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'; // Importamos Link para la navegación
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient'
 import Button from '@/components/Button';
 
@@ -34,36 +34,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
       <div className="max-w-md w-full mx-auto">
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-3xl font-bold text-center mb-2 text-black">Bienvenido de Nuevo</h1>
+        <div className="bg-white p-8 rounded-xl shadow-lg">
+          <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">Bienvenido de Nuevo</h1>
           <p className="text-center text-gray-600 mb-6">Inicia sesión para continuar en JAMBO</p>
           <form onSubmit={handleSignIn}>
             {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             
             <div className="mb-4">
-              <label htmlFor="email" className="block mb-1 font-medium text-black">Email</label>
+              <label htmlFor="email" className="block mb-1 font-medium text-gray-700">Email</label>
               <input 
                 id="email" 
                 type="email" 
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900" // <-- CORRECCIÓN AQUÍ
                 disabled={loading}
               />
             </div>
             
             <div className="mb-6">
-              <label htmlFor="password" className="block mb-1 font-medium text-black">Contraseña</label>
+              <label htmlFor="password" className="block mb-1 font-medium text-gray-700">Contraseña</label>
               <input 
                 id="password" 
                 type="password" 
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-gray-900" // <-- CORRECCIÓN AQUÍ
                 disabled={loading}
               />
             </div>
@@ -73,7 +73,7 @@ export default function LoginPage() {
             </Button>
           </form>
         </div>
-        <p className="text-center mt-4 text-black">
+        <p className="text-center mt-4 text-gray-600">
           ¿No tienes una cuenta? <Link href="/signup" className="text-red-600 hover:underline font-medium">Regístrate</Link>
         </p>
       </div>

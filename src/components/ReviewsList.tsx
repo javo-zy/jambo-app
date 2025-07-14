@@ -8,26 +8,26 @@ type ReviewWithClientName = {
 
 export default function ReviewsList({ reviews }: { reviews: ReviewWithClientName[] }) {
   return (
-    <>
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Reseñas de Clientes</h3>
+    <section className="bg-white p-6 rounded-lg shadow-sm">
+      <h3 className="text-2xl font-bold text-black mb-4">Reseñas de Clientes</h3>
       {reviews.length > 0 ? (
-        <div>
+        <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                <span style={{ fontWeight: 'bold' }}>{review.client_name || 'Anónimo'}</span>
-                <span style={{ marginLeft: '10px', fontWeight: 'bold', color: '#f59e0b' }}>
-                  ★ {review.rating}
+            <div key={review.id} className="border-t border-gray-200 pt-4">
+              <div className="flex items-center mb-1">
+                <span className="font-semibold text-black">{review.client_name || 'Anónimo'}</span>
+                <span className="ml-3 flex items-center">
+                  <span className="text-yellow-400">★</span>
+                  <span className="ml-1 font-bold text-black">{review.rating}</span>
                 </span>
               </div>
-              <p style={{ margin: 0 }}>{review.comment}</p>
+              <p className="text-gray-700">{review.comment}</p>
             </div>
           ))}
         </div>
       ) : (
-        <p>Este profesional aún no tiene reseñas.</p>
+        <p className="text-gray-600">Este profesional aún no tiene reseñas.</p>
       )}
-    </>
+    </section>
   );
 }

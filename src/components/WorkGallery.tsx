@@ -1,15 +1,24 @@
 // src/components/WorkGallery.tsx
+import Image from 'next/image';
+
 export default function WorkGallery({ images, professionalName }: { images: string[], professionalName: string | null }) {
   if (images.length === 0) return null;
   return (
-    <>
-      <hr style={{ margin: '30px 0' }} />
-      <h3 style={{ fontSize: '1.25rem' }}>Galería de Trabajos</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+    <section className="bg-white p-6 rounded-lg shadow-sm">
+      <h3 className="text-2xl font-bold text-black mb-4">Galería de Trabajos</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {images.map((url, index) => (
-          <img key={index} src={url} alt={`Trabajo de ${professionalName}`} style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}/>
+          <div key={index} className="aspect-w-1 aspect-h-1">
+            <Image 
+              src={url} 
+              alt={`Trabajo de ${professionalName}`} 
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg"
+            />
+          </div>
         ))}
       </div>
-    </>
+    </section>
   );
 }

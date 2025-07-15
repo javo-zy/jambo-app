@@ -1,5 +1,6 @@
 // src/components/Footer.tsx
 import Link from 'next/link';
+import Image from 'next/image'; // Importamos Image para el logo
 
 export default function Footer() {
   return (
@@ -9,7 +10,10 @@ export default function Footer() {
           
           {/* Columna 1: Logo y descripción */}
           <div className="col-span-2 md:col-span-1">
-            <h3 className="text-2xl font-bold text-white">JAMBO</h3>
+            <Link href="/" className="flex items-center gap-2 mb-2">
+                <Image src="/images/jambo-logo-white.png" alt="Jambo Logo" width={35} height={35} />
+                <h3 className="text-2xl font-bold text-white">JAMBO</h3>
+            </Link>
             <p className="mt-2 text-gray-400 text-sm">
               Conectando habilidades con necesidad.
             </p>
@@ -19,9 +23,12 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold tracking-wider uppercase">Compañía</h4>
             <ul className="mt-4 space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Sobre Nosotros</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contacto</a></li>
+              {/* Apuntamos a la sección de la homepage */}
+              <li><Link href="/#aboutus" className="text-gray-400 hover:text-white transition-colors">Sobre Nosotros</Link></li>
+              {/* Placeholder para página futura */}
+              <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
+              {/* Placeholder para página futura */}
+              <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contacto</Link></li>
             </ul>
           </div>
 
@@ -29,8 +36,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold tracking-wider uppercase">Profesionales</h4>
             <ul className="mt-4 space-y-2">
+              {/* Enlace real a la página de registro */}
               <li><Link href="/signup" className="text-gray-400 hover:text-white transition-colors">Regístrate</Link></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">¿Cómo funciona?</a></li>
+              {/* Apuntamos a la sección de la homepage */}
+              <li><Link href="/#functions" className="text-gray-400 hover:text-white transition-colors">¿Cómo funciona?</Link></li>
             </ul>
           </div>
 
@@ -38,8 +47,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold tracking-wider uppercase">Legal</h4>
             <ul className="mt-4 space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Términos de Servicio</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Política de Privacidad</a></li>
+              {/* Placeholder para página futura */}
+              <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Términos de Servicio</Link></li>
+              {/* Placeholder para página futura */}
+              <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Política de Privacidad</Link></li>
             </ul>
           </div>
 
